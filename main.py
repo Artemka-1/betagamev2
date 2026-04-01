@@ -32,56 +32,52 @@ turn_manager = TurnManager(player, enemy, rules=rules)
 turn_manager.phase = "PLAYER_TURN"
 
 # цикл боя
-log.add(f"[Turn {turn_manager.turn}] Battle started")
+log.battle_start(turn_manager.turn)
+
 while turn_manager.phase != "END_BATTLE":
-    log.add(f"[Turn {turn_manager.turn}] Turn start: {turn_manager.phase}")
-    print(f"\nTurn {turn_manager.turn}, Phase: {turn_manager.phase}")
-    print(f"Player HP: {player.hp}, Enemy HP: {enemy.hp}")
-
-#"""turn of the player"""
-
+    log.turn_start(turn_manager.turn, turn_manager.phase)
 
     if turn_manager.phase == "PLAYER_TURN":
-        action = input("Выберите действие (attack/skip): ").strip().lower()
+        action_input = input("Выберите действие (attack/skip): ").strip().lower()
 
-        if action == "attack":
-            player.attack(enemy)  # Игрок атакует врага    
-            log.add(
-                f"[Turn {turn_manager.turn}] {player.name} attacks {enemy.name} "
-                f"(Enemy HP: {enemy.hp})"
-                )
+        if action_input == "attack":
+            player.attack(enemy)
+            log.action(
+                turn_manager.turn,
+                f"{player.name} attacks {enemy.name} (Enemy HP: {enemy.hp})"
+            )
+
             if not enemy.is_alive():
-                log.add(f"[Turn {turn_manager.turn}] {enemy.name} died")
-                
-            if not enemy.is_alive():
+                log.death(turn_manager.turn, enemy.name)
                 turn_manager.phase = "END_BATTLE"
                 continue
+            else:
+                turn_manager.phase = "ENEMY_TURN"
 
-        elif action == "skip":
-            print("Вы пропустили ход.")
-# start of the enemys turn
+        elif action_input == "skip":
+            log.action(
+                turn_manager.turn,
+                f"{player.name} skips the turn"
+            )
+            turn_manager.phase = "ENEMY_TURN"
+
     elif turn_manager.phase == "ENEMY_TURN":
         enemy.attack(player)
-        log.add(
-            f"[Turn {turn_manager.turn}] {enemy.name} attacks {player.name} "
-            f"(Player HP: {player.hp})"
-        )
-        
+        log.action(turn_manager.turn, f"{enemy.name} attacks {player.name} (Player HP: {player.hp})")
         if not player.is_alive():
-            log.add(f"[Turn {turn_manager.turn}] {player.name} died")
-            
-        if not player.is_alive():
+            log.death(turn_manager.turn, player.name)
             turn_manager.phase = "END_BATTLE"
         else:
             turn_manager.phase = "RESOLVE"
 
-    # Разрешение конца хода
     elif turn_manager.phase == "RESOLVE":
         turn_manager.turn += 1
         if player.is_alive() and enemy.is_alive():
             turn_manager.phase = "PLAYER_TURN"
         else:
             turn_manager.phase = "END_BATTLE"
+
+
 # the battle results after turns and create th end phase of the battle
             
             
@@ -93,6 +89,6 @@ else:
     print("\nНичья!")
 
 print(f"\nБой закончился за {turn_manager.turn} ходов.")
-log.add(f"[Turn {turn_manager.turn}] Battle ended")
 print("\n--- Battle Log ---")
 print(log)
+log.battle_end(turn_manager.turn)
