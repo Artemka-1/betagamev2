@@ -6,6 +6,9 @@ class BattleLog:
         self.events = []
 
     # запись в лог
+    def phase_start(self, turn, phase):
+        self.add(f"[Turn {turn}] Phase start: {phase}")
+
     def add(self, text):
         self.events.append(text)
 

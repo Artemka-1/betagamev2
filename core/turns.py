@@ -1,26 +1,43 @@
+# core/turns.py
 class TurnManager:
-    def __init__(self, player, enemy, rules=None):
-        self.player = player
-        self.enemy = enemy
-        self.rules = rules if rules else []
-        self.phase = "PRE_BATTLE"
+    def __init__(self, players, enemies, rules=None):
+        self.players = players  # список игроков
+        self.enemies = enemies  # список врагов
+        self.rules = rules or []
+
         self.turn = 1
+        self.phase = "PLAYER_TURN"
 
-        # Применяем правила в начале боя
-        for rule in self.rules:
-            rule.apply(self.player, self.enemy)
+    def get_alive(self, entities):
+        return [e for e in entities if e.is_alive()]
 
-    def execute_phase(self):
-        if self.phase == "PRE_BATTLE":
-            print(f"Фаза подготовки к бою. Ход {self.turn}")
-        elif self.phase == "PLAYER_TURN":
-            print("Ход игрока")
+    def all_dead(self, entities):
+        return len(self.get_alive(entities)) == 0
+
+    def next_phase(self):
+        if self.phase == "PLAYER_TURN":
+            self.phase = "ENEMY_TURN"
         elif self.phase == "ENEMY_TURN":
-            print("Ход врага")
+            self.phase = "RESOLVE"
         elif self.phase == "RESOLVE":
-            print("Разрешение действий")
-        elif self.phase == "END_BATTLE":
-            print("Бой завершён")
-        else:
-            print(f"Неизвестная фаза: {self.phase}")
-            
+            self.turn += 1
+            if self.get_alive(self.players) and self.get_alive(self.enemies):
+                self.phase = "PLAYER_TURN"
+            else:
+                self.phase = "END_BATTLE"
+
+    def apply_rules(self, actor, target):
+        for rule in self.rules:
+            rule.apply(actor, target)
+
+    
+    def is_battle_over(self):
+        if not self.get_alive(self.players):
+            self.phase = "END_BATTLE"
+            return True
+        if not self.get_alive(self.enemies):
+            self.phase = "END_BATTLE"
+            return True
+        return False
+
+    
