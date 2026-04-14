@@ -10,13 +10,12 @@ log = battle_log.BattleLog()
 
 # команды игроков и врагов
 players = [
-    EntityV2("Игрок1", hp=30, dmg=5, char_class=MAGE),
-    EntityV2("Игрок2", hp=25, dmg=6, char_class=KNIGHT)
+    EntityV2("Игрок1", hp=30, dmg=5, char_class=MAGE, faction="INT"),
+    EntityV2("Игрок2", hp=25, dmg=6, char_class=KNIGHT, faction="STR")
 ]
-
 enemies = [
-    EntityV2("Враг1", hp=20, dmg=4, char_class=ARCHER),
-    EntityV2("Враг2", hp=18, dmg=5, char_class=MAGE)
+    EntityV2("Враг1", hp=20, dmg=4, char_class=ARCHER, faction="DEX"),
+    EntityV2("Враг2", hp=18, dmg=5, char_class=MAGE, faction="INT")
 ]
 
 # предбоевой таймер
