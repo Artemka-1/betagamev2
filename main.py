@@ -5,19 +5,18 @@ from core.classes import KNIGHT, ARCHER, MAGE
 from core.pre_fight import pre_fight_timer
 from core.turns import TurnManager
 from core.rules import MageBonusRule
+from core.roster import Mael, VasaraX
+from core.entity_factory import create_entity_from_roster
 
 log = battle_log.BattleLog()
 
 # команды игроков и врагов
 players = [
-    EntityV2("Игрок1", hp=30, dmg=5, char_class=MAGE, faction="INT"),
-    EntityV2("Игрок2", hp=25, dmg=6, char_class=KNIGHT, faction="STR")
+    create_entity_from_roster(Mael)
 ]
 enemies = [
-    EntityV2("Враг1", hp=20, dmg=4, char_class=ARCHER, faction="DEX"),
-    EntityV2("Враг2", hp=18, dmg=5, char_class=MAGE, faction="INT")
+    create_entity_from_roster(VasaraX)
 ]
-
 # предбоевой таймер
 pre_fight_timer(1)
 
@@ -45,9 +44,12 @@ while not turn_manager.is_battle_over():
             
             if action_input == "attack":
                 target = turn_manager.get_alive(turn_manager.enemies)[0]
-                p.attack(target)
+                damage = p.attack(target)
                 turn_manager.apply_rules(p, target)
-                log.action(turn_manager.turn, f"{p.name} атакует {target.name} (HP врага: {target.hp})")
+                log.action(
+                    turn_manager.turn,
+                    f"{p.name} атакует {target.name} ({damage} урона, HP врага: {target.hp})"
+                    )
                 if not target.is_alive():
                     log.death(turn_manager.turn, target.name)
             elif action_input == "skip":
@@ -57,9 +59,12 @@ while not turn_manager.is_battle_over():
     elif turn_manager.phase == "ENEMY_TURN":
         for e in turn_manager.get_alive(turn_manager.enemies):
             target = turn_manager.get_alive(turn_manager.players)[0]
-            e.attack(target)
+            damage = e.attack(target)
             turn_manager.apply_rules(e, target)
-            log.action(turn_manager.turn, f"{e.name} атакует {target.name} (HP игрока: {target.hp})")
+            log.action(
+                turn_manager.turn,
+                f"{e.name} атакует {target.name} ({damage} урона, HP игрока: {target.hp})"
+                )
             if not target.is_alive():
                 log.death(turn_manager.turn, target.name)
     
