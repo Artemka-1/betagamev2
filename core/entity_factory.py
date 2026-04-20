@@ -6,5 +6,10 @@ def create_entity_from_roster(data: dict) -> EntityV2:
         hp=data["hp"],
         dmg=data["base_damage"],
         char_class=data.get("class"),
-        faction=data.get("faction")
+        faction=data.get("faction"),
+
+        armor=data.get("armor", 0),
+        magic_resistance=data.get("magic_resistance", 0.0),
+        abilities=data.get("abilities", [])
     )
+    
