@@ -1,35 +1,20 @@
-from core.turns import TurnManager
+﻿from core.turns import TurnManager
 from core.battle_log import BattleLog
-from core.entity_factory import create_entity_from_roster
-from core.roster import Mael, Morok, VasaraX, QueenValkyrie, Maluk
-
-
-def create_battle():
-    """Create a simple battle setup with players and enemies"""
-    players = [
-        create_entity_from_roster(Mael),
-        create_entity_from_roster(VasaraX),
-    ]
-    enemies = [
-        create_entity_from_roster(Morok),
-        create_entity_from_roster(QueenValkyrie),
-    ]
-    return players, enemies
+from core.entity_factory import create_battle
 
 
 def main():
-    players, enemies = create_battle()
+    entities = create_battle()
     battle_log = BattleLog()
     
-    tm = TurnManager(players, enemies)
+    tm = TurnManager(entities, battle_log)
     
-    battle_log.battle_start(1)
+    battle_log.battle_start()
     
     while not tm.is_battle_over():
-        tm.next_phase()
-        battle_log.phase_start(tm.turn, tm.phase)
+        tm.process_turn()
 
-    battle_log.battle_end(tm.turn)
+    battle_log.battle_end()
     print(battle_log)
     print("Battle finished")
 

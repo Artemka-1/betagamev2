@@ -12,10 +12,20 @@ class EntityV2:
 
         self.armor = armor
         self.magic_resistance = magic_resistance
-        self.od = 0
-        self.od_max = 100
-        self.abilities = abilities or []
+        self.od = 100 if od == 0 else od
+        self.od_max = od_max
+        self._set_abilities(abilities or [])
+
+    def _set_abilities(self, abilities):
+        """Set abilities and initialize cooldowns"""
+        self.abilities = abilities
         self.cooldowns = {ability.name: 0 for ability in self.abilities}
+
+    def add_abilities(self, abilities):
+        """Add abilities after initialization"""
+        self.abilities.extend(abilities)
+        for ability in abilities:
+            self.cooldowns[ability.name] = 0
 
     def is_alive(self):
         return self.hp > 0
