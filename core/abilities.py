@@ -154,7 +154,7 @@ def time_warp(user, target, ability):
 def create_blade_dance():
     return Ability(
         name="Blade Dance",
-        cost=15,
+        cost=5,
         cooldown=2,
         description="4 быстрых удара",
         action=blade_dance,
@@ -165,7 +165,7 @@ def create_blade_dance():
 def create_storm_slashes():
     return Ability(
         name="Storm Slashes",
-        cost=25,
+        cost=9,
         cooldown=3,
         description="12 быстрых ударов",
         action=storm_slashes,

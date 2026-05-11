@@ -1,3 +1,4 @@
+from core.combat_system import CombatSystem
 from core.entity_v2 import EntityV2
 from core.abilities import (
     create_blade_dance,
@@ -28,6 +29,8 @@ def create_entity_from_roster(data: dict) -> EntityV2:
 
 def create_battle():
     """Create and return all entities for a battle"""
+    combat_system = CombatSystem()
+
     # Player entities
     mael = EntityV2(
         name="Mael",
@@ -36,7 +39,8 @@ def create_battle():
         armor=17,
         magic_resistance=0.21,
         char_class="Agility",
-        faction="Players"
+        faction="Players",
+        combat_system=combat_system
     )
     mael.add_abilities([
         create_blade_dance(),
@@ -51,7 +55,8 @@ def create_battle():
         armor=32,
         magic_resistance=0.18,
         char_class="Strength",
-        faction="Enemies"
+        faction="Enemies",
+        combat_system=combat_system
     )
     vasarax.add_abilities([
         create_barbarian_touch(),
@@ -65,7 +70,8 @@ def create_battle():
         armor=9,
         magic_resistance=0.29,
         char_class="Magic",
-        faction="Enemies"
+        faction="Enemies",
+        combat_system=combat_system
     )
     
     morok = EntityV2(
@@ -75,7 +81,8 @@ def create_battle():
         armor=18,
         magic_resistance=0.19,
         char_class="Strength",
-        faction="Enemies"
+        faction="Enemies",
+        combat_system=combat_system
     )
     
     paradox = EntityV2(
@@ -85,7 +92,8 @@ def create_battle():
         armor=7,
         magic_resistance=0.31,
         char_class="Magic",
-        faction="Enemies"
+        faction="Enemies",
+        combat_system=combat_system
     )
     
     # Return all entities

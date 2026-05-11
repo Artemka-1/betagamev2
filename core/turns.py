@@ -1,5 +1,5 @@
 # core/turns.py
-
+    
 class TurnManager:
     def __init__(self, entities, battle_log):
         """
@@ -71,31 +71,36 @@ class TurnManager:
         return alive_targets[0] if alive_targets else None
 
     def _execute_action(self, actor, target):
-        # попытка использовать способность
-        if actor.abilities:
-            available = actor.get_available_abilities()
-            if available:
-                ability = available[0]
-                try:
-                    result = actor.use_ability(ability.name, target)
-                    self.battle_log.action(result)
-                    return
-                except Exception:
-                    pass  # fallback на обычную атаку
+        action = actor.request_action(target)
 
-        # обычная атака
-        damage = actor.attack(target)
-        self.battle_log.action(
-            f"{actor.name} attacks {target.name} for {damage} damage!"
-        )
+        if not action:
+            return
+
+        if action["type"] == "ability":
+            ability_target = action.get("target") or target
+            try:
+                result = actor.use_ability(action["ability"], ability_target)
+                self.battle_log.action(result)
+            except Exception:
+                damage = actor.attack(target)
+                self.battle_log.action(
+                    f"{actor.name} failed ability and attacks {target.name} for {damage} damage!"
+                )
+            return
+
+        if action["type"] == "attack":
+            damage = actor.attack(target)
+            self.battle_log.action(
+                f"{actor.name} attacks {target.name} for {damage} damage!"
+            )
+            return
 
     def _advance_turn(self):
-        """Переход к следующему ходу"""
+        self.queue = [e for e in self.entities if e.is_alive()]
         self.current_index += 1
 
         if self.current_index >= len(self.queue):
             self.current_index = 0
             self.turn += 1
 
-        # чистим мёртвых
-        self.queue = [e for e in self.queue if e.is_alive()]
+        
