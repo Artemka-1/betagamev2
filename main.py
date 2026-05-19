@@ -1,16 +1,16 @@
-﻿from core.turns import TurnManager
+from core.turn_manager import TurnManager
 from core.battle_log import BattleLog
 from core.entity_factory import create_battle
 
 
 def main():
     entities = create_battle()
+
     battle_log = BattleLog()
-    
     tm = TurnManager(entities, battle_log)
-    
+
     battle_log.battle_start()
-    
+
     while not tm.is_battle_over():
         tm.process_turn()
 

@@ -1,4 +1,6 @@
-from core import abilities
+from unittest import result
+
+from core import abilities, damage_result
 import random
 
 
@@ -53,6 +55,9 @@ class EntityV2:
             ability for ability in self.abilities
             if self.can_use_ability(ability.name)
         ]
+        
+    def apply_damage(self, damage_result):
+        self.hp -= damage_result.final_damage
 
     def has_ability(self, ability_name):
         return any(a.name == ability_name for a in self.abilities)
@@ -105,20 +110,20 @@ class EntityV2:
     # -----------------------------
 
     def attack(self, target):
-        if self.combat_system is None:
-            raise ValueError(f"{self.name} has no combat_system assigned")
+        if not self.combat_system:
+            raise ValueError("No combat system assigned")
 
-        damage = self.combat_system.deal_damage(
+        result = self.combat_system.deal_damage(
             self,
             target,
             self.dmg,
             "physical"
         )
 
-        self.gain_od(15)
-        target.gain_od(5)
+        target.apply_damage(result)
+        self.gain_od(3)
 
-        return damage
+        return result.final_damage  # ВРЕМЕННО
 
     def receive_damage(self, damage, damage_type="physical", attacker=None):
         if attacker and self.try_parry(attacker):
@@ -134,9 +139,6 @@ class EntityV2:
         final_damage = max(0, int(reduced))
 
         # 👉 ОД даём ПОСЛЕ расчёта урона
-        if final_damage > 0:
-            self.gain_od(10)
-
         self.hp -= final_damage
         return final_damage
 
@@ -232,3 +234,7 @@ class EntityV2:
                 }
 
             print("Choice out of range. Try again.")
+    
+    
+    def tick_statuses(self):
+        pass
