@@ -13,6 +13,7 @@ def main():
 
     while not tm.is_battle_over():
         tm.process_turn()
+        input("Нажмите Enter для следующего хода...")
 
     battle_log.battle_end()
     print(battle_log)

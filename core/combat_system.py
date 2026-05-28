@@ -24,10 +24,7 @@ class CombatSystem:
 
         return DamageResult(
             raw_damage=raw_damage,
-            mitigated_damage=int(mitigated),
             final_damage=final_damage,
-            armor_used=armor_used,
-            resist_used=resist_used,
-            crit=False,
-            blocked=False
+            is_crit=False,
+            reduced_by_armor=armor_used if damage_type == "physical" else resist_used
         )
