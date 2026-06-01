@@ -1,23 +1,35 @@
+﻿from core.combat_system import CombatSystem
+
 class ActionSystem:
-    def execute(self, actor, target):
-        """
-        Выполняет одно действие актёра.
-        Возвращает текст для лога.
-        """
+    def execute_ability(self, attacker, target, ability):
+        return CombatSystem.calculate_damage(
+            attacker,
+            target,
+            getattr(ability, 'damage', 0),
+            damage_type=getattr(ability, 'damage_type', 'physical')
+        )
 
-        action = actor.request_action(target)
+    def execute(self, action):
+        if action is None:
+            return None
 
-        if not action:
-            return f"{actor.name} skips turn"
+        action_type = action.get('type')
+        attacker = action.get('source')
+        target = action.get('target')
 
-        if action["type"] == "attack":
-            damage = actor.attack(target)
-            return f"{actor.name} attacks {target.name} for {damage} damage!"
+        if action_type == 'attack':
+            base_damage = getattr(attacker, 'dmg', 0)
+            return CombatSystem.calculate_damage(
+                attacker,
+                target,
+                base_damage,
+                damage_type='physical'
+            )
 
-        if action["type"] == "ability":
-            ability_name = action["ability"]
-            ability_target = action.get("target", target)
-            result = actor.use_ability(ability_name, ability_target)
-            return result
+        if action_type == 'ability':
+            ability = action.get('ability')
+            if ability is None:
+                return None
+            return self.execute_ability(attacker, target, ability)
 
-        return f"{actor.name} does nothing"
+        return None
