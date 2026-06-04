@@ -1,10 +1,21 @@
-from core.combat_system import CombatSystem
+﻿from core.combat_system import CombatSystem
 from core.action_system import ActionSystem
 from core.decision_system import DecisionSystem
 from core.turn_manager import TurnManager
 from core.status_system import StatusSystem
 from core.battle_log import BattleLog
 from core.entity_factory import create_battle
+
+
+def player_action_callback(actor, enemies):
+    # simple interactive placeholder: pick first enemy
+    if not enemies:
+        return None
+    return {
+        "type": "attack",
+        "source": actor,
+        "target": enemies[0]
+    }
 
 
 def main():

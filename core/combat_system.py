@@ -1,29 +1,46 @@
-﻿from core.damage_result import DamageResult
+﻿import random
+from core.damage_result import DamageResult
+
 
 class CombatSystem:
+
     @staticmethod
-    def calculate_damage(attacker, defender, base_damage: int, damage_type="physical"):
-        raw_damage = base_damage
-        armor_used = 0
-        resist_used = 0
+    def calculate_damage(
+        source,
+        target,
+        damage_range: tuple[int, int] | None = None,
+        base_damage: int | None = None,
+        damage_type: str = "physical"
+    ) -> DamageResult:
 
-        if damage_type == "physical":
-            armor_used = defender.armor
-            mitigated = raw_damage * (100 / (100 + armor_used))
-        elif damage_type == "magic":
-            resist_used = defender.magic_resistance
-            mitigated = raw_damage * (100 / (100 + resist_used))
+        # 1. BASE DAMAGE RESOLVE
+        if damage_range is not None:
+            damage = random.randint(*damage_range)
+        elif base_damage is not None:
+            damage = base_damage
         else:
-            mitigated = raw_damage
+            damage = 0
 
+        # 2. MITIGATION
+        if damage_type == "physical":
+            reduction = target.armor / (100 + target.armor)
+            mitigated = damage * (1 - reduction)
+
+        elif damage_type == "magic":
+            reduction = target.magic_resistance / (100 + target.magic_resistance)
+            mitigated = damage * (1 - reduction)
+
+        else:  # true damage
+            mitigated = damage
+
+        # 3. FINAL DAMAGE
         final_damage = max(0, int(mitigated))
 
+        # 4. RESULT (NO SIDE EFFECTS)
         return DamageResult(
-            source=attacker,
-            target=defender,
-            raw_damage=raw_damage,
+            source=source,
+            target=target,
+            raw_damage=damage,
             final_damage=final_damage,
-            damage_type=damage_type,
-            is_crit=False,
-            reduced_by_armor=armor_used if damage_type == "physical" else resist_used
+            damage_type=damage_type
         )
