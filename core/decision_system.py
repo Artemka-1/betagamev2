@@ -26,5 +26,6 @@
         return {
             "type": "attack",
             "source": actor,
-            "target": enemies[0]
+            "target": enemies[0],
+            "base_damage": actor.stats.get("attack", 0)
         }

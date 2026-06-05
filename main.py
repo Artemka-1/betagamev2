@@ -1,4 +1,4 @@
-﻿from core.combat_system import CombatSystem
+from core.combat_system import CombatSystem
 from core.action_system import ActionSystem
 from core.decision_system import DecisionSystem
 from core.turn_manager import TurnManager
@@ -8,13 +8,28 @@ from core.entity_factory import create_battle
 
 
 def player_action_callback(actor, enemies):
-    # simple interactive placeholder: pick first enemy
     if not enemies:
         return None
+
+    print(f"Выберите цель для {actor.name}:")
+    for idx, enemy in enumerate(enemies, start=1):
+        print(f"{idx}) {enemy.name} (HP {enemy.hp}/{enemy.max_hp})")
+
+    while True:
+        choice = input(f"Номер цели (1-{len(enemies)}): ").strip()
+        if not choice.isdigit():
+            print("Введите число.")
+            continue
+        target_index = int(choice) - 1
+        if 0 <= target_index < len(enemies):
+            break
+        print("Неверный номер цели.")
+
+    target = enemies[target_index]
     return {
         "type": "attack",
         "source": actor,
-        "target": enemies[0]
+        "target": target
     }
 
 
@@ -43,9 +58,16 @@ def main():
     battle_log.battle_start()
     print(battle_log.events[-1])
 
+    last_event_index = len(battle_log.events)
     while not tm.is_battle_over():
         tm.process_turn()
-        input("Enter...")
+
+        for event in battle_log.events[last_event_index:]:
+            print(event)
+        last_event_index = len(battle_log.events)
+
+        if not tm.is_battle_over():
+            input("Нажмите Enter для продолжения...")
 
     battle_log.battle_end()
     print(battle_log)
